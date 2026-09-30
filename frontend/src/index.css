@@ -1,9 +1,9 @@
 :root {
-  --paper: #f7f7f3;
-  --ink: #202522;
-  --muted: #65706a;
-  --line: #d9ded9;
-  --signal: #bd4c38;
+  --paper: #f5f5f2;
+  --ink: #1d2a2a;
+  --muted: #5d6b68;
+  --line: #dfe5e1;
+  --signal: #d96944;
   background: var(--paper);
   color: var(--ink);
   font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
@@ -18,10 +18,16 @@
   box-sizing: border-box;
 }
 
+html {
+  background: var(--paper);
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
 }
 
 button,
@@ -29,4 +35,8 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+img {
+  max-width: 100%;
 }
