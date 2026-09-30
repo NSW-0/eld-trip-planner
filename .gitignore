@@ -1,0 +1,30 @@
+docs/
+.vscode/
+CLAUDE.md
+plan.md
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+/backend/staticfiles/
+*.sqlite3
+.coverage
+.tox/
+
+# Node and frontend build output
+node_modules/
+dist/
+coverage/
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
