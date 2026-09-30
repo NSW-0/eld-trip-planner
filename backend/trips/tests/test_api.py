@@ -16,8 +16,7 @@ def test_geocode_autocomplete_returns_suggestions(api_client):
     assert "suggestions" in payload
     assert payload["suggestions"]
     assert any(
-        "Chicago" in suggestion["label"]
-        for suggestion in payload["suggestions"]
+        "Chicago" in suggestion["label"] for suggestion in payload["suggestions"]
     )
 
 
