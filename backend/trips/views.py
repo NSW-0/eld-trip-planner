@@ -45,7 +45,10 @@ def trip_plan(request):
             return Response({"error": message}, status=400)
         return Response({"error": message}, status=400)
 
-    if not validate_timeline(plan["timeline"]):
+    if not validate_timeline(
+        plan["timeline"],
+        current_cycle_used_hours=payload.get("current_cycle_used_hours", 0),
+    ):
         return Response(
             {"error": "Generated timeline violates the HOS rules."},
             status=400,
