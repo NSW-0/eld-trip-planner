@@ -157,6 +157,16 @@ button:focus {
   padding: 0.9rem 1rem;
 }
 
+.log-details-accordion {
+  border: 1px solid var(--line);
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.log-details-accordion::before {
+  display: none;
+}
+
 .map-panel {
   padding: 16px;
 }
@@ -170,6 +180,19 @@ button:focus {
 .map-container {
   height: 100%;
   width: 100%;
+}
+
+.map-empty-label {
+  background: rgba(237, 235, 220, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  left: 50%;
+  padding: 8px 12px;
+  position: absolute;
+  top: 16px;
+  transform: translateX(-50%);
+  z-index: 500;
 }
 
 .map-legend {
@@ -197,6 +220,10 @@ button:focus {
 .legend-dot.start { background: #1e7d52; }
 .legend-dot.pickup { background: #f59e0b; }
 .legend-dot.dropoff { background: #d9485f; }
+.legend-dot.fuel,
+.legend-dot.restart { background: #d83e7f; }
+.legend-dot.break { background: #64727a; }
+.legend-dot.rest { background: #005dac; }
 
 .lower-grid {
   display: grid;
@@ -282,10 +309,141 @@ button:focus {
   box-shadow: 0 0 0 3px rgba(217, 72, 95, 0.18);
 }
 
+.custom-map-pin.fuel {
+  background: #d83e7f;
+  box-shadow: 0 0 0 3px rgba(216, 62, 127, 0.18);
+}
+
+.custom-map-pin.break {
+  background: #64727a;
+  box-shadow: 0 0 0 3px rgba(100, 114, 122, 0.18);
+}
+
+.custom-map-pin.rest {
+  background: #005dac;
+  box-shadow: 0 0 0 3px rgba(0, 93, 172, 0.18);
+}
+
+.custom-map-pin.restart {
+  background: #d83e7f;
+  box-shadow: 0 0 0 3px rgba(216, 62, 127, 0.18);
+}
+
 .custom-map-pin span {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.log-section {
+  border-top: 1px solid var(--line);
+  margin-top: 32px;
+  padding-top: 24px;
+}
+
+.log-section-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.log-sheet-viewport {
+  background: #fffef8;
+  border: 1px solid var(--line);
+  margin-top: 16px;
+  overflow-x: auto;
+}
+
+.log-sheet-svg {
+  display: block;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  height: auto;
+  min-width: 960px;
+  width: 100%;
+}
+
+.log-sheet-title {
+  fill: var(--ink);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.log-sheet-section-title {
+  fill: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.log-sheet-grid-heading {
+  fill: #fffef8;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.log-sheet-row-label {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.log-sheet-label {
+  fill: var(--muted);
+  font-size: 10px;
+}
+
+.log-sheet-value {
+  fill: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.log-sheet-small,
+.log-sheet-remark {
+  fill: var(--ink);
+  font-size: 10px;
+}
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 0.25in;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .log-section,
+  .log-section * {
+    visibility: visible;
+  }
+
+  .log-section {
+    left: 0;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  .log-section-header,
+  .log-section .MuiTabs-root {
+    display: none;
+  }
+
+  .log-sheet-viewport {
+    border: 0;
+    margin: 0;
+    overflow: visible;
+  }
+
+  .log-sheet-svg {
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 @media (max-width: 900px) {
