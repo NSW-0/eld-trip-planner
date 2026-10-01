@@ -99,10 +99,6 @@ function LocationField({
   const [inputValue, setInputValue] = useState(value)
 
   useEffect(() => {
-    setInputValue(value)
-  }, [value])
-
-  useEffect(() => {
     const timer = window.setTimeout(() => {
       void fetchSuggestions(inputValue).then(setOptions)
     }, 250)
