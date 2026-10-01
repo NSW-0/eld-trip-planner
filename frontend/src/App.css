@@ -1,19 +1,17 @@
 .app-shell {
   min-height: 100vh;
-  background: #f4f4f1;
+  background: var(--paper);
 }
 
 .topbar {
   align-items: center;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(237, 235, 220, 0.92);
   display: flex;
   height: 68px;
   justify-content: space-between;
   padding: 0 36px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  position: static;
 }
 
 .wordmark {
@@ -59,7 +57,7 @@
 .planner-panel,
 .map-panel,
 .panel-box {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 254, 248, 0.9);
   border: 1px solid var(--line);
   border-radius: 18px;
   box-shadow: 0 12px 32px rgba(30, 39, 36, 0.05);
@@ -76,7 +74,7 @@
 }
 
 .section-dot {
-  background: var(--signal);
+  background: var(--accent);
   border-radius: 50%;
   height: 7px;
   width: 7px;
@@ -124,7 +122,7 @@ input {
 
 input:focus,
 button:focus {
-  outline: 2px solid rgba(67, 122, 255, 0.4);
+  outline: 2px solid rgba(0, 93, 172, 0.4);
   outline-offset: 2px;
 }
 
@@ -150,7 +148,7 @@ button:focus {
 }
 
 .primary-button {
-  background: linear-gradient(135deg, #1f4fbc, #2d6cdf);
+  background: var(--signal);
   border: none;
   border-radius: 12px;
   color: white;
@@ -265,10 +263,23 @@ button:focus {
 }
 
 .custom-map-pin {
-  background: #2f6fef;
   border: 3px solid #fff;
   border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(47, 111, 239, 0.18);
+}
+
+.custom-map-pin.start {
+  background: #1e7d52;
+  box-shadow: 0 0 0 3px rgba(30, 125, 82, 0.18);
+}
+
+.custom-map-pin.pickup {
+  background: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+.custom-map-pin.dropoff {
+  background: #d9485f;
+  box-shadow: 0 0 0 3px rgba(217, 72, 95, 0.18);
 }
 
 .custom-map-pin span {
