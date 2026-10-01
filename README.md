@@ -152,31 +152,33 @@ The project was verified locally with the following results:
 
 ### Frontend deployment (Vercel)
 
-1. import the `frontend` directory into Vercel
-2. set the build command to `npm run build`
-3. set the output directory to `dist`
-4. Set `VITE_API_BASE_URL` to the deployed backend API base URL, ending in `/api`.
+1. Import the repository into Vercel and set the project root to `frontend`. The checked-in `frontend/vercel.json` configures the Vite build and `dist` output.
+2. Set `VITE_API_BASE_URL` to the backend origin with `/api`, for example `https://eld-trip-planner-api.onrender.com/api`.
+3. Deploy after the backend service is available. The frontend build embeds this URL, so redeploy after changing it.
 
 ### Backend deployment
 
-Deploy the Django app to a host that keeps the service warm, such as Render, Railway, Fly.io, or an equivalent managed platform.
+The root `render.yaml` defines a Render web service using Gunicorn and `/api/health/` as its health check. It selects Render's paid Starter plan so the API stays warm; review current Render pricing before creating the service. Do not proceed with a paid service unless you approve its cost.
 
-Required backend environment variables:
+Configure the following backend environment variables in Render:
 
 - `DJANGO_SECRET_KEY`
 - `DJANGO_DEBUG=false`
-- `DJANGO_ALLOWED_HOSTS=your-host-name`
 - `CORS_ALLOWED_ORIGINS=https://your-frontend-domain.vercel.app`
-- `ORS_API_KEY=...`
+- `ORS_API_KEY` (optional; set privately to enable truck-profile ORS routing)
+- `NOMINATIM_USER_AGENT=ELDTripPlanner/1.0 (HOS trip planning)`
+
+Render generates `DJANGO_SECRET_KEY`; Django adds Render's assigned hostname to `ALLOWED_HOSTS`. After deploying Vercel, update `CORS_ALLOWED_ORIGINS` to the exact frontend origin and redeploy the backend. Without `ORS_API_KEY`, routing uses OSRM and the UI labels it not truck-verified.
 
 ### Production checklist
 
-- public deployment has not yet been completed
+- Render and Vercel services have not yet been created from the account dashboards
 - backend is reachable over HTTPS
 - frontend CORS allows the production frontend origin
 - API keys are server-side only
 - the deployed app returns a valid route and stop timeline for a sample trip
 - the health endpoint responds and does not sleep before first request
+- capture submission screenshots and record the Loom walkthrough
 
 ## Assumptions used by the planner
 
