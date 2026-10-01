@@ -1,10 +1,14 @@
 # ELD Trip Planner
 
+**Live application:** [https://nabeel-eld-trip-planner.vercel.app](https://nabeel-eld-trip-planner.vercel.app)
+
+**Backend health:** [https://eld-trip-planner-nsw-0.vercel.app/api/health/](https://eld-trip-planner-nsw-0.vercel.app/api/health/)
+
 ELD Trip Planner is a trip-planning app for property-carrying drivers. Its Django API and React interface plan routes, simulate FMCSA 70-hour / 8-day HOS schedules, and render daily driver logs.
 
 ## Current implementation status
 
-The frontend submits trips to `POST /api/trips/plan` and displays the returned route, stops, summary, assumptions, and SVG daily logs. The backend prefers ORS HGV routing when `ORS_API_KEY` is configured; without it, the app uses Nominatim and OSRM and clearly marks the route as not truck-verified. The code is validated locally, but production hosting, screenshots, and the recorded Loom walkthrough remain outstanding.
+The frontend submits trips to `POST /api/trips/plan` and displays the returned route, stops, summary, assumptions, and SVG daily logs. The backend prefers ORS HGV routing when `ORS_API_KEY` is configured; without it, the app uses Nominatim and OSRM and clearly marks the route as not truck-verified. The app is deployed on Vercel. The full live trip-plan flow, screenshots, and recorded Loom walkthrough still need final verification/completion.
 
 ## What the app does
 
@@ -108,7 +112,7 @@ Important notes:
 - `NOMINATIM_USER_AGENT` identifies the app to Nominatim; fallback requests are rate-limited to one per second.
 - never expose the API key in browser code or frontend source control.
 - CORS must allow the deployed frontend origin in production.
-- In local development, Vite proxies `/api` to Django. For production, set `VITE_API_BASE_URL` to the deployed backend API base URL, such as `https://api.example.com/api`.
+- In local development, Vite proxies `/api` to Django. Production uses the Vercel backend URL shown below.
 - Django reads environment variables from the process or host configuration; `.env.example` is a reference and is not auto-loaded.
 
 ## API endpoints
@@ -150,29 +154,46 @@ The project was verified locally with the following results:
 
 ## Deployment guidance
 
-### Deploy frontend and backend on Vercel
+### Vercel deployment
 
-Vercel supports this Django backend as a serverless function. This avoids a separate paid always-on service, but the backend may cold-start after inactivity and is subject to Vercel plan/function limits. Test the deployed API against the assessment trips before submission.
+The frontend and Django API are separate Vercel projects from the same public GitHub repository, both deploying from `main` on pushes. The backend runs as a Vercel serverless function, so its first request after inactivity may take about three seconds. Vercel's project dashboard is the source of truth for each deployment's `Ready` status.
 
-Create two Vercel projects from this GitHub repository:
+**Live projects**
 
-1. Frontend project: set the project root to `frontend`. The checked-in `frontend/vercel.json` configures the Vite build and `dist` output.
-2. Backend project: set the project root to `backend`. Vercel detects `manage.py` and the Django WSGI application.
-3. Deploy the backend first. In its Vercel project settings, add `DJANGO_SECRET_KEY` (generate a new random value), `DJANGO_DEBUG=false`, `CORS_ALLOWED_ORIGINS` (the exact frontend origin), and `NOMINATIM_USER_AGENT=ELDTripPlanner/1.0 (HOS trip planning)`. Add `ORS_API_KEY` privately if available.
-4. Django adds Vercel's `VERCEL_URL` hostname to `ALLOWED_HOSTS`. If you attach a custom backend domain, add that host to `DJANGO_ALLOWED_HOSTS` too.
-5. Set frontend `VITE_API_BASE_URL` to the backend URL ending in `/api`, for example `https://eld-trip-planner-api.vercel.app/api`, then redeploy the frontend.
+- Frontend project `nabeel-eld-trip-planner`: [https://nabeel-eld-trip-planner.vercel.app](https://nabeel-eld-trip-planner.vercel.app)
+- Backend project `eld-trip-planner`: [https://eld-trip-planner-nsw-0.vercel.app](https://eld-trip-planner-nsw-0.vercel.app)
+- API base URL: `https://eld-trip-planner-nsw-0.vercel.app/api`
 
-Keep `ORS_API_KEY` only in backend environment settings. Without it, routing uses OSRM and the UI marks the route as not truck-verified. Do not paste secrets into chat, README files, or source control.
+**Project configuration**
+
+- Frontend root directory: `frontend`; `frontend/vercel.json` sets the Vite build and `dist` output.
+- Backend root directory: `backend`; import as a single project so Vercel does not detect the unrelated root `pyproject.toml` as another Python app.
+- Frontend `VITE_API_BASE_URL`: `https://eld-trip-planner-nsw-0.vercel.app/api`.
+- Backend `DJANGO_ALLOWED_HOSTS`: `.vercel.app`. Django also accepts the per-deployment `VERCEL_URL`; do not rely on `VERCEL_URL` alone for the stable production domain.
+- Backend `CORS_ALLOWED_ORIGINS`: `https://nabeel-eld-trip-planner.vercel.app`.
+- Backend secrets such as `DJANGO_SECRET_KEY` and `ORS_API_KEY` belong only in the Vercel backend project's environment settings. No secret values belong in this README or source control.
+- Vercel Deployment Protection / Vercel Authentication is disabled on both projects so public visitors can access the app.
+
+**Deployment gotchas**
+
+- Use the actual domains shown in your Vercel dashboard; do not infer a domain from a project name.
+- Django's `VERCEL_URL` is deployment-specific. The stable production hostname must also be allowed through `DJANGO_ALLOWED_HOSTS`.
+- Disable Vercel Authentication on both public projects or visitors will be redirected to a Vercel login page.
+- The serverless backend can cold-start; autocomplete's initial request may take around three seconds.
+- Without `ORS_API_KEY`, OSRM fallback is used and marked not truck-verified.
+
+Both Vercel projects deploy from `main`. After future pushes, check that each project's latest deployment is `Ready` and that Deployment Protection remains off for the public assessment links.
 
 ### Production checklist
 
-- Vercel frontend and backend projects have not yet been created from the account dashboard
-- backend is reachable over HTTPS
-- frontend CORS allows the production frontend origin
-- API keys are server-side only
-- the deployed app returns a valid route and stop timeline for a sample trip
-- the health endpoint and plan endpoint respond after a cold start
-- capture submission screenshots and record the Loom walkthrough
+- [x] Frontend and backend are publicly reachable over HTTPS.
+- [x] Backend health endpoint returns `{"status":"ok"}`.
+- [x] Production autocomplete returns HTTP 200 from the backend.
+- [x] Cross-origin frontend-to-backend requests work with the configured CORS origin.
+- [x] Secret environment values are configured in Vercel rather than committed to the repository.
+- [x] Vercel Authentication is disabled on both public projects.
+- [ ] Complete and verify a full live `Plan trip` request, including the returned schedule and log sheets.
+- [ ] Capture submission screenshots and record the Loom walkthrough.
 
 ## Assumptions used by the planner
 
