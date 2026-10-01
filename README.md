@@ -150,34 +150,28 @@ The project was verified locally with the following results:
 
 ## Deployment guidance
 
-### Frontend deployment (Vercel)
+### Deploy frontend and backend on Vercel
 
-1. Import the repository into Vercel and set the project root to `frontend`. The checked-in `frontend/vercel.json` configures the Vite build and `dist` output.
-2. Set `VITE_API_BASE_URL` to the backend origin with `/api`, for example `https://eld-trip-planner-api.onrender.com/api`.
-3. Deploy after the backend service is available. The frontend build embeds this URL, so redeploy after changing it.
+Vercel supports this Django backend as a serverless function. This avoids a separate paid always-on service, but the backend may cold-start after inactivity and is subject to Vercel plan/function limits. Test the deployed API against the assessment trips before submission.
 
-### Backend deployment
+Create two Vercel projects from this GitHub repository:
 
-The root `render.yaml` defines a Render web service using Gunicorn and `/api/health/` as its health check. It selects Render's paid Starter plan so the API stays warm; review current Render pricing before creating the service. Do not proceed with a paid service unless you approve its cost.
+1. Frontend project: set the project root to `frontend`. The checked-in `frontend/vercel.json` configures the Vite build and `dist` output.
+2. Backend project: set the project root to `backend`. Vercel detects `manage.py` and the Django WSGI application.
+3. Deploy the backend first. In its Vercel project settings, add `DJANGO_SECRET_KEY` (generate a new random value), `DJANGO_DEBUG=false`, `CORS_ALLOWED_ORIGINS` (the exact frontend origin), and `NOMINATIM_USER_AGENT=ELDTripPlanner/1.0 (HOS trip planning)`. Add `ORS_API_KEY` privately if available.
+4. Django adds Vercel's `VERCEL_URL` hostname to `ALLOWED_HOSTS`. If you attach a custom backend domain, add that host to `DJANGO_ALLOWED_HOSTS` too.
+5. Set frontend `VITE_API_BASE_URL` to the backend URL ending in `/api`, for example `https://eld-trip-planner-api.vercel.app/api`, then redeploy the frontend.
 
-Configure the following backend environment variables in Render:
-
-- `DJANGO_SECRET_KEY`
-- `DJANGO_DEBUG=false`
-- `CORS_ALLOWED_ORIGINS=https://your-frontend-domain.vercel.app`
-- `ORS_API_KEY` (optional; set privately to enable truck-profile ORS routing)
-- `NOMINATIM_USER_AGENT=ELDTripPlanner/1.0 (HOS trip planning)`
-
-Render generates `DJANGO_SECRET_KEY`; Django adds Render's assigned hostname to `ALLOWED_HOSTS`. After deploying Vercel, update `CORS_ALLOWED_ORIGINS` to the exact frontend origin and redeploy the backend. Without `ORS_API_KEY`, routing uses OSRM and the UI labels it not truck-verified.
+Keep `ORS_API_KEY` only in backend environment settings. Without it, routing uses OSRM and the UI marks the route as not truck-verified. Do not paste secrets into chat, README files, or source control.
 
 ### Production checklist
 
-- Render and Vercel services have not yet been created from the account dashboards
+- Vercel frontend and backend projects have not yet been created from the account dashboard
 - backend is reachable over HTTPS
 - frontend CORS allows the production frontend origin
 - API keys are server-side only
 - the deployed app returns a valid route and stop timeline for a sample trip
-- the health endpoint responds and does not sleep before first request
+- the health endpoint and plan endpoint respond after a cold start
 - capture submission screenshots and record the Loom walkthrough
 
 ## Assumptions used by the planner
